@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Mimie Store"
+description = "A polished online cosmetics store for browsing beauty products, filtering collections, adding items to a cart, and placing orders through WhatsApp in Iraqi dinars."
+version = "1.0.0"
+id = "artifacts/mimie-store"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20125
+
+[services.development]
+run = "pnpm --filter @workspace/mimie-store run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/mimie-store", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/mimie-store/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20125"
+BASE_PATH = "/"
