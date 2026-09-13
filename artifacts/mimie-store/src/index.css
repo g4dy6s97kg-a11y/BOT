@@ -186,4 +186,31 @@ a { -webkit-tap-highlight-color: transparent; }
   .admin-main { padding: 35px 0 65px; }.admin-intro { align-items: flex-start; flex-direction: column; gap: 19px; margin-bottom: 24px; }.admin-intro h1 { font-size: 50px; }.admin-intro p:not(.eyebrow) { max-width: 300px; font-size: 12px; }.admin-primary-button { width: 100%; min-height: 50px; }
   .admin-stats { gap: 7px; margin-bottom: 18px; }.admin-stats > div { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; padding: 12px 10px; }.admin-stats svg { margin-bottom: 3px; }.admin-stats strong { font-size: 22px; }.admin-stats span { font-size: 8px; }
   .admin-layout { display: flex; flex-direction: column; gap: 14px; }.admin-products-panel, .admin-panel, .admin-editor { width: 100%; border-radius: 17px; padding: 17px; }.admin-panel-heading { align-items: flex-start; flex-direction: column; gap: 13px; }.admin-panel-heading h2, .admin-editor-heading h2 { font-size: 27px; }.admin-search { width: 100%; }.admin-product-row { align-items: flex-start; gap: 9px; padding: 9px 0; }.admin-product-thumb { width: 52px; height: 58px; }.admin-product-details h3 { font-size: 12px; }.admin-product-details > span { font-size: 8px; }.admin-product-details strong { font-size: 9px; }.admin-product-name { align-items: flex-start; flex-direction: column; gap: 4px; }.admin-row-actions { flex-direction: column; gap: 3px; }.admin-icon-button { width: 32px; height: 32px; }.admin-side-column { width: 100%; order: 2; }.admin-editor { order: 3; }.admin-form { grid-template-columns: 1fr; gap: 13px; }.admin-form-wide { grid-column: auto; }.admin-form-actions { grid-column: auto; flex-direction: column; align-items: stretch; }.admin-secondary-button { width: 100%; }.admin-image-preview { width: 100px; height: 100px; }
+}/* ===== إصلاح مشكلة الاهتزاز وصعوبة الضغط ===== */
+
+@media (hover: none) {
+  .product-card:hover,
+  .category-pill:hover,
+  .category-active,
+  .btn-main:hover,
+  .btn-quiet:hover,
+  .icon-btn:hover,
+  .favorite-button:hover,
+  .add-button:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  .product-card:hover .product-image > * {
+    transform: none !important;
+  }
+}
+
+.animate-float {
+  animation: none !important;
+}
+
+.grain::after {
+  pointer-events: none !important;
+  z-index: 1 !important;
 }
