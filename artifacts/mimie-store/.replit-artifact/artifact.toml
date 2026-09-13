@@ -1,7 +1,7 @@
 kind = "web"
 previewPath = "/"
 title = "Mimie Store"
-description = "A polished online cosmetics store for browsing beauty products, filtering collections, adding items to a cart, and placing orders through WhatsApp in Iraqi dinars."
+description = "A polished online cosmetics store for browsing beauty products, filtering collections, adding items to a cart, and placing orders through Instagram in Iraqi dinars."
 version = "1.0.0"
 id = "artifacts/mimie-store"
 router = "path"

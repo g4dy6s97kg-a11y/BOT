@@ -277,7 +277,7 @@ function JournalSection({ onSubscribe }: { onSubscribe: () => void }) {
   );
 }
 
-function CartDrawer({ items, open, onClose, onChangeQuantity, onRemove, onWhatsApp }: { items: CartItem[]; open: boolean; onClose: () => void; onChangeQuantity: (id: number, delta: number) => void; onRemove: (id: number) => void; onWhatsApp: () => void }) {
+function CartDrawer({ items, open, onClose, onChangeQuantity, onRemove, onInstagram }: { items: CartItem[]; open: boolean; onClose: () => void; onChangeQuantity: (id: number, delta: number) => void; onRemove: (id: number) => void; onInstagram: () => void }) {
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const count = items.reduce((sum, item) => sum + item.quantity, 0);
   useEffect(() => { document.body.classList.toggle('no-scroll', open); return () => document.body.classList.remove('no-scroll'); }, [open]);
@@ -285,12 +285,12 @@ function CartDrawer({ items, open, onClose, onChangeQuantity, onRemove, onWhatsA
   return <><div className="backdrop" onClick={onClose} aria-hidden="true" /><aside className="cart-drawer animate-slide" aria-label="سلة المشتريات">
     <div className="cart-head"><div><p className="eyebrow">سلّتك الصغيرة</p><h2>{count} {count === 1 ? 'قطعة' : 'قطع'}</h2></div><button className="icon-btn" onClick={onClose} aria-label="إغلاق السلة" title="إغلاق" data-testid="button-close-cart"><X size={19} /></button></div>
     <div className="cart-content">{items.length === 0 ? <div className="cart-empty"><div className="empty-bag"><ShoppingBag size={25} /></div><h3>السلة بانتظاركِ.</h3><p>ابدئي بقطعة تجعل صباحكِ أقرب إليكِ.</p><button className="btn-main" onClick={onClose} data-testid="button-browse-from-cart">تصفّحي المختارات</button></div> : <>{items.map(item => <div className="cart-item" key={item.id} data-testid={`row-cart-${item.id}`}><div className="cart-visual"><ProductVisual product={item} small /></div><div className="cart-item-copy"><div className="product-brand">{item.brand}</div><h3>{item.name}</h3><strong>{formatIQD(item.price)}</strong><div className="quantity-row"><button onClick={() => onChangeQuantity(item.id, -1)} aria-label={`تقليل كمية ${item.name}`} title="تقليل" data-testid={`button-decrease-${item.id}`}><Minus size={13} /></button><span>{item.quantity}</span><button onClick={() => onChangeQuantity(item.id, 1)} aria-label={`زيادة كمية ${item.name}`} title="زيادة" data-testid={`button-increase-${item.id}`}><Plus size={13} /></button><button className="remove-item" onClick={() => onRemove(item.id)} aria-label={`حذف ${item.name}`} title="حذف" data-testid={`button-remove-${item.id}`}><Trash2 size={14} /></button></div></div></div>)}</>}</div>
-    {items.length > 0 && <div className="cart-bottom"><div className="cart-subtotal"><span>المجموع الفرعي</span><strong>{formatIQD(total)}</strong></div><div className="cart-total"><span>الإجمالي</span><strong>{formatIQD(total)}</strong></div><p>نؤكد أجور التوصيل معكِ عبر واتساب قبل الإرسال.</p><button className="whatsapp-button" onClick={onWhatsApp} data-testid="button-whatsapp-order"><Send size={18} /> إتمام الطلب عبر واتساب <ArrowLeft size={16} /></button><button className="continue-button" onClick={onClose} data-testid="button-continue-browsing">متابعة التسوّق</button></div>}
+     {items.length > 0 && <div className="cart-bottom"><div className="cart-subtotal"><span>المجموع الفرعي</span><strong>{formatIQD(total)}</strong></div><div className="cart-total"><span>الإجمالي</span><strong>{formatIQD(total)}</strong></div><p>تُنسخ تفاصيل طلبكِ تلقائياً، ثم نفتح حساب ميمي على Instagram لإرسالها.</p><button className="instagram-button" onClick={onInstagram} data-testid="button-instagram-order"><Instagram size={18} /> اطلب عبر Instagram <ArrowLeft size={16} /></button><button className="continue-button" onClick={onClose} data-testid="button-continue-browsing">متابعة التسوّق</button></div>}
   </aside></>;
 }
 
 function Footer() {
-  return <footer className="site-footer"><div className="wrap footer-grid"><div><Logo light /><p className="footer-intro">كونتر جمالكِ الخاص،<br />على بُعد رسالة.</p><div className="socials"><a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="إنستغرام ميمي" data-testid="link-instagram"><Instagram size={17} /></a><a href="https://wa.me/9647700000000" target="_blank" rel="noreferrer" aria-label="واتساب ميمي" data-testid="link-whatsapp"><Send size={17} /></a></div></div><div className="footer-links"><div><span className="footer-label">تصفّحي</span><a href="#shop">المختارات</a><a href="#categories">التصنيفات</a><a href="#story">حكايتنا</a></div><div><span className="footer-label">نحن هنا</span><a href="https://wa.me/9647700000000" target="_blank" rel="noreferrer">راسلينا واتساب</a><a href="#shop">ملاحظات التوصيل</a><a href="#top">العودة للأعلى</a></div></div></div><div className="wrap footer-bottom"><span>© ٢٠٢٤ ميمي ستور · بغداد، العراق</span><span>مصنوع لأيام الإشراقة اليومية.</span></div></footer>;
+  return <footer className="site-footer"><div className="wrap footer-grid"><div><Logo light /><p className="footer-intro">كونتر جمالكِ الخاص،<br />على بُعد رسالة.</p><div className="socials"><a href="https://www.instagram.com/mimie.store05m/" target="_blank" rel="noreferrer" aria-label="إنستغرام ميمي" data-testid="link-instagram"><Instagram size={17} /></a></div></div><div className="footer-links"><div><span className="footer-label">تصفّحي</span><a href="#shop">المختارات</a><a href="#categories">التصنيفات</a><a href="#story">حكايتنا</a></div><div><span className="footer-label">نحن هنا</span><a href="https://www.instagram.com/mimie.store05m/" target="_blank" rel="noreferrer">اطلبي عبر Instagram</a><a href="#shop">ملاحظات التوصيل</a><a href="#top">العودة للأعلى</a></div></div></div><div className="wrap footer-bottom"><span>© ٢٠٢٤ ميمي ستور · بغداد، العراق</span><span>مصنوع لأيام الإشراقة اليومية.</span></div></footer>;
 }
 
 function Home({ products, categories, cart, setCart }: { products: Product[]; categories: string[]; cart: CartItem[]; setCart: Dispatch<SetStateAction<CartItem[]>> }) {
@@ -314,11 +314,13 @@ function Home({ products, categories, cart, setCart }: { products: Product[]; ca
   const addToCart = (product: Product) => { setCart(current => current.some(item => item.id === product.id) ? current.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item) : [...current, { ...product, quantity: 1 }]); flash(`أضيفت «${product.name}» إلى السلة`); };
   const changeQuantity = (id: number, delta: number) => setCart(current => current.map(item => item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item));
   const removeItem = (id: number) => { const product = cart.find(item => item.id === id); setCart(current => current.filter(item => item.id !== id)); if (product) flash(`حُذفت «${product.name}» من السلة`); };
-  const whatsappOrder = () => {
+  const instagramOrder = () => {
     const lines = cart.map(item => `- ${item.name} × ${item.quantity} — ${formatIQD(item.price * item.quantity)}`).join('\n');
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const message = encodeURIComponent(`مرحباً ميمي، أود طلب المنتجات التالية:\n\n${lines}\n\nالمجموع: ${formatIQD(total)}\n\nالاسم ومنطقة التوصيل:`);
-    window.open(`https://wa.me/9647700000000?text=${message}`, '_blank', 'noopener,noreferrer');
+    const orderText = `مرحباً ميمي، أود طلب المنتجات التالية:\n\n${lines}\n\nالمجموع: ${formatIQD(total)}\n\nالاسم ومنطقة التوصيل:`;
+    navigator.clipboard?.writeText(orderText).catch(() => undefined);
+    window.open('https://www.instagram.com/mimie.store05m/', '_blank', 'noopener,noreferrer');
+    flash('نُسخت تفاصيل طلبكِ، أرسليها في Instagram');
   };
   const selectCategory = (category: Category) => { setActiveCategory(category); setQuery(''); document.querySelector('#shop')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
   const clearFilters = () => { setActiveCategory('الكل'); setQuery(''); };
@@ -326,7 +328,7 @@ function Home({ products, categories, cart, setCart }: { products: Product[]; ca
      <Header cartCount={cartCount} announcementVisible={announcementVisible} menuOpen={menuOpen} onCart={() => setCartOpen(true)} onDismissAnnouncement={() => setAnnouncementVisible(false)} onMenuToggle={() => setMenuOpen(value => !value)} onSearch={() => { setSearchOpen(value => !value); setMenuOpen(false); }} />
     {searchOpen && <div className="search-panel animate-rise"><div className="wrap"><Search size={18} /><input autoFocus value={query} placeholder="ابحثي عن منتج أو ماركة..." aria-label="البحث عن منتج" data-testid="input-search" onChange={event => setQuery(event.target.value)} onKeyDown={event => { if (event.key === 'Escape') setSearchOpen(false); }} /><button onClick={() => { setQuery(''); setSearchOpen(false); }} aria-label="إغلاق البحث" title="إغلاق" data-testid="button-close-search"><X size={18} /></button></div></div>}
      <main><Hero onShop={() => selectCategory('الكل')} /><div className="perk-row"><div><Check size={16} /><span>منتجات أصلية دائماً</span></div><div><Check size={16} /><span>توصيل محلي بتغليف محبب</span></div><div><Check size={16} /><span>نصيحة من شخص حقيقي</span></div></div><CategoryStrip active={activeCategory} categories={[categoryMeta('الكل', 1, products.length), ...categories.map((label, index) => categoryMeta(label, index + 2, products.filter(product => product.category === label).length))]} onSelect={selectCategory} /><ShopSection active={activeCategory} query={query} products={products} onAdd={addToCart} onFavorite={id => setFavorites(current => current.includes(id) ? current.filter(item => item !== id) : [...current, id])} favorites={favorites} onClear={clearFilters} /><StorySection /><JournalSection onSubscribe={() => flash('شكراً لانضمامكِ إلى ملاحظة ميمي')} /></main>
-    <Footer /><CartDrawer items={cart} open={cartOpen} onClose={() => setCartOpen(false)} onChangeQuantity={changeQuantity} onRemove={removeItem} onWhatsApp={whatsappOrder} />
+     <Footer /><CartDrawer items={cart} open={cartOpen} onClose={() => setCartOpen(false)} onChangeQuantity={changeQuantity} onRemove={removeItem} onInstagram={instagramOrder} />
     {toast && <div className="toast animate-toast" role="status" data-testid="status-cart"><Check size={16} />{toast}</div>}
   </div>;
 }
@@ -361,6 +363,7 @@ function Admin({ products, categories, onProductsChange, onCategoriesChange }: {
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState<ProductForm>(emptyProductForm);
   const [categoryName, setCategoryName] = useState('');
+  const [editingCategory, setEditingCategory] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [query, setQuery] = useState('');
 
@@ -394,6 +397,14 @@ function Admin({ products, categories, onProductsChange, onCategoriesChange }: {
   const closeEditor = () => {
     setEditing(null);
     setForm({ ...emptyProductForm, category: categories[0] ?? '' });
+  };
+  const startCategoryEdit = (category: string) => {
+    setEditingCategory(category);
+    setCategoryName(category);
+  };
+  const cancelCategoryEdit = () => {
+    setEditingCategory(null);
+    setCategoryName('');
   };
   const saveProduct = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -449,8 +460,16 @@ function Admin({ products, categories, onProductsChange, onCategoriesChange }: {
     event.preventDefault();
     const cleanName = categoryName.trim();
     if (!cleanName) return;
-    if (cleanName === 'الكل' || categories.includes(cleanName)) {
+    if (cleanName === 'الكل' || categories.some(category => category === cleanName && category !== editingCategory)) {
       flashAdmin('error', 'هذا القسم موجود مسبقاً.');
+      return;
+    }
+    if (editingCategory) {
+      onCategoriesChange(categories.map(category => category === editingCategory ? cleanName : category));
+      onProductsChange(products.map(product => product.category === editingCategory ? { ...product, category: cleanName } : product));
+      setForm(current => current.category === editingCategory ? { ...current, category: cleanName } : current);
+      cancelCategoryEdit();
+      flashAdmin('success', 'تم تعديل اسم القسم وتحديث المنتجات المرتبطة.');
       return;
     }
     onCategoriesChange([...categories, cleanName]);
@@ -507,7 +526,7 @@ function Admin({ products, categories, onProductsChange, onCategoriesChange }: {
           </article>)}</div>}
         </section>
         <aside className="admin-side-column">
-          <section className="admin-panel category-admin-panel"><div className="admin-panel-heading compact"><div><p className="eyebrow">تنظيم الكتالوج</p><h2>الأقسام</h2></div><FolderPlus size={20} /></div><form className="category-add-form" onSubmit={addCategory}><input value={categoryName} onChange={event => setCategoryName(event.target.value)} placeholder="اسم القسم الجديد" aria-label="اسم القسم الجديد" data-testid="input-new-category" /><button type="submit" aria-label="إضافة قسم" title="إضافة قسم" data-testid="button-add-category"><Plus size={18} /></button></form><div className="category-admin-list">{categories.map(category => <div key={category}><span>{category}<small>{products.filter(product => product.category === category).length} منتجات</small></span><button onClick={() => deleteCategory(category)} aria-label={`حذف قسم ${category}`} title="حذف القسم" data-testid={`button-delete-category-${category}`}><Trash2 size={15} /></button></div>)}</div><p className="admin-help"><AlertCircle size={14} /> لا يمكن حذف قسم مرتبط بمنتجات.</p></section>
+           <section className="admin-panel category-admin-panel"><div className="admin-panel-heading compact"><div><p className="eyebrow">تنظيم الكتالوج</p><h2>الأقسام</h2></div><FolderPlus size={20} /></div><form className="category-add-form" onSubmit={addCategory}><input value={categoryName} onChange={event => setCategoryName(event.target.value)} placeholder={editingCategory ? 'الاسم الجديد للقسم' : 'اسم القسم الجديد'} aria-label={editingCategory ? 'الاسم الجديد للقسم' : 'اسم القسم الجديد'} data-testid="input-new-category" /><button type="submit" aria-label={editingCategory ? 'حفظ تعديل القسم' : 'إضافة قسم'} title={editingCategory ? 'حفظ تعديل القسم' : 'إضافة قسم'} data-testid="button-add-category">{editingCategory ? <Save size={18} /> : <Plus size={18} />}</button>{editingCategory && <button type="button" className="category-cancel-button" onClick={cancelCategoryEdit} aria-label="إلغاء تعديل القسم" title="إلغاء تعديل القسم" data-testid="button-cancel-category-edit"><X size={16} /></button>}</form><div className="category-admin-list">{categories.map(category => <div key={category}><span>{category}<small>{products.filter(product => product.category === category).length} منتجات</small></span><div className="category-row-actions"><button onClick={() => startCategoryEdit(category)} aria-label={`تعديل قسم ${category}`} title="تعديل القسم" data-testid={`button-edit-category-${category}`}><Pencil size={15} /></button><button onClick={() => deleteCategory(category)} aria-label={`حذف قسم ${category}`} title="حذف القسم" data-testid={`button-delete-category-${category}`}><Trash2 size={15} /></button></div></div>)}</div><p className="admin-help"><AlertCircle size={14} /> تعديل القسم يحدّث منتجاته تلقائياً، ولا يمكن حذف قسم مرتبط بمنتجات.</p></section>
           {!editing && <div className="admin-side-note"><Sparkles size={19} /><div><strong>ملاحظة ميمي</strong><p>أضيفي صوراً واضحة بنسبة مربعة لتظهر أجمل على المتجر.</p></div></div>}
         </aside>
       </div>
