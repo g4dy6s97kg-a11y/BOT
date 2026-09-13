@@ -1,18 +1,28 @@
-import { type CSSProperties, useEffect, useMemo, useState } from 'react';
+import { type ChangeEvent, type CSSProperties, type Dispatch, type FormEvent, type SetStateAction, useEffect, useMemo, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import {
   ArrowLeft,
+  ArrowRight,
+  AlertCircle,
   Check,
+  CheckCircle2,
   ChevronDown,
   ChevronLeft,
+  Eye,
+  EyeOff,
+  FolderPlus,
   Heart,
+  ImagePlus,
   Instagram,
+  LayoutDashboard,
   Menu,
   Minus,
+  Pencil,
   Plus,
+  Save,
   Search,
   Send,
   ShoppingBag,
@@ -21,16 +31,16 @@ import {
   Trash2,
   X,
 } from 'lucide-react';
-import { Route, Switch, Router as WouterRouter } from 'wouter';
+import { Link, Route, Switch, Router as WouterRouter, useLocation } from 'wouter';
 import NotFound from '@/pages/not-found';
 
-type Category = 'الكل' | 'المكياج' | 'العناية بالبشرة' | 'العناية بالشعر' | 'الإكسسوارات';
+type Category = string;
 type ProductVisual = 'serum' | 'lip' | 'palette' | 'cream' | 'brush' | 'mist';
 type Product = {
   id: number;
   name: string;
   brand: string;
-  category: Exclude<Category, 'الكل'>;
+  category: string;
   price: number;
   oldPrice?: number;
   note: string;
@@ -40,12 +50,14 @@ type Product = {
   visual: ProductVisual;
   tone: string;
   accent: string;
+  image?: string;
+  visible?: boolean;
 };
 type CartItem = Product & { quantity: number };
 
 const queryClient = new QueryClient();
 
-const products: Product[] = [
+const defaultProducts: Product[] = [
   { id: 1, name: 'سيروم هاني غلو', brand: 'Beauty of Joseon', category: 'العناية بالبشرة', price: 32500, oldPrice: 38000, note: 'بروبوليس + نياسيناميد', rating: 4.9, reviews: 28, badge: 'الأكثر طلباً', visual: 'serum', tone: '#e7b887', accent: '#a75b40' },
   { id: 2, name: 'بلاش سوفت بينش', brand: 'Rare Beauty', category: 'المكياج', price: 42000, note: 'بلاش سائل · جوي', rating: 4.8, reviews: 34, badge: 'محبوب في بغداد', visual: 'lip', tone: '#e4a29c', accent: '#7e334c' },
   { id: 3, name: 'روج بلاك هاني', brand: 'Clinique', category: 'المكياج', price: 38500, note: 'ليبستك مرطب · 04', rating: 4.9, reviews: 41, visual: 'lip', tone: '#482530', accent: '#d28186' },
@@ -56,13 +68,36 @@ const products: Product[] = [
   { id: 8, name: 'بخاخ ماء الورد', brand: 'Mario Badescu', category: 'العناية بالبشرة', price: 29500, note: 'ورد + ألوفيرا · 118 مل', rating: 4.7, reviews: 27, visual: 'mist', tone: '#e6b7b3', accent: '#ad5267' },
 ];
 
-const categories: { label: Category; count: string; mark: string; description: string }[] = [
+const defaultCategories: { label: Category; count: string; mark: string; description: string }[] = [
   { label: 'الكل', count: '08 منتجات', mark: '01', description: 'اختيارات مميزة' },
   { label: 'المكياج', count: '04 منتجات', mark: '02', description: 'لون ولمعة' },
   { label: 'العناية بالبشرة', count: '03 منتجات', mark: '03', description: 'روتين هادئ' },
   { label: 'العناية بالشعر', count: 'قريباً', mark: '04', description: 'لمسات يومية' },
   { label: 'الإكسسوارات', count: '01 منتج', mark: '05', description: 'سر اللمسة الأخيرة' },
 ];
+
+const PRODUCTS_KEY = 'mimie-store-products';
+const CATEGORIES_KEY = 'mimie-store-categories';
+
+function readStored<T>(key: string, fallback: T): T {
+  try {
+    const raw = window.localStorage.getItem(key);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed as T : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function categoryMeta(label: string, index: number, count: number) {
+  return {
+    label,
+    count: label === 'الكل' ? `${count.toString().padStart(2, '0')} منتجات` : `${count.toString().padStart(2, '0')} منتجات`,
+    mark: index.toString().padStart(2, '0'),
+    description: label === 'الكل' ? 'اختيارات مميزة' : 'اختيارات ميمي',
+  };
+}
 
 function formatIQD(value: number) {
   return `${new Intl.NumberFormat('en-US').format(value)} د.ع`;
@@ -75,6 +110,7 @@ function ProductVisual({ product, small = false }: { product: Product; small?: b
       style={{ '--tone': product.tone, '--accent-tone': product.accent } as CSSProperties}
       aria-hidden="true"
     >
+      {product.image && <img className="uploaded-product-image" src={product.image} alt="" />}
       <div className="visual-halo" />
       {product.visual === 'serum' && <><div className="serum-dropper" /><div className="serum-bottle"><span>BEAUTY<br />OF JOSEON</span><b>GLOW</b></div></>}
       {product.visual === 'lip' && <><div className="lip-shadow" /><div className="lipstick-case"><div className="lipstick-bullet" /></div><div className="lip-label">MIMIE</div></>}
@@ -129,6 +165,7 @@ function Header({
         </nav>
         <div className="nav-actions">
           <button className="nav-search" onClick={onSearch} data-testid="button-search" aria-label="البحث عن منتج"><Search size={18} /><span>بحث</span></button>
+          <Link href="/admin" className="admin-link" data-testid="link-admin"><LayoutDashboard size={15} /><span>لوحة التحكم</span></Link>
           <button className="bag-button" onClick={onCart} data-testid="button-cart" aria-label="فتح سلة المشتريات"><ShoppingBag size={19} /><span className="bag-label">سلّتي</span>{cartCount > 0 && <b>{cartCount}</b>}</button>
         </div>
       </div>
@@ -136,6 +173,7 @@ function Header({
         <a href="#shop" onClick={onMenuToggle} data-testid="mobile-link-shop">تسوّقي المختارات <ChevronLeft size={16} /></a>
         <a href="#categories" onClick={onMenuToggle} data-testid="mobile-link-categories">التصنيفات <ChevronLeft size={16} /></a>
         <a href="#story" onClick={onMenuToggle} data-testid="mobile-link-story">حكاية ميمي <ChevronLeft size={16} /></a>
+         <Link href="/admin" onClick={onMenuToggle} className="mobile-admin-link" data-testid="mobile-link-admin"><LayoutDashboard size={16} /> لوحة التحكم</Link>
       </nav>}
     </header>
   );
@@ -166,7 +204,7 @@ function Hero({ onShop }: { onShop: () => void }) {
   );
 }
 
-function CategoryStrip({ active, onSelect }: { active: Category; onSelect: (category: Category) => void }) {
+function CategoryStrip({ active, categories, onSelect }: { active: Category; categories: { label: Category; count: string; mark: string; description: string }[]; onSelect: (category: Category) => void }) {
   return (
     <section className="category-section" id="categories">
       <div className="wrap">
@@ -200,7 +238,7 @@ function ProductCard({ product, onAdd, onFavorite, favorite }: { product: Produc
   );
 }
 
-function ShopSection({ active, query, onAdd, onFavorite, favorites, onClear }: { active: Category; query: string; onAdd: (product: Product) => void; onFavorite: (id: number) => void; favorites: number[]; onClear: () => void }) {
+function ShopSection({ active, query, products, onAdd, onFavorite, favorites, onClear }: { active: Category; query: string; products: Product[]; onAdd: (product: Product) => void; onFavorite: (id: number) => void; favorites: number[]; onClear: () => void }) {
   const filtered = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase('ar');
     return products.filter(product => {
@@ -208,7 +246,7 @@ function ShopSection({ active, query, onAdd, onFavorite, favorites, onClear }: {
       const searchable = `${product.name} ${product.brand} ${product.note} ${product.category}`.toLocaleLowerCase('ar');
       return matchesCategory && (!normalizedQuery || searchable.includes(normalizedQuery));
     });
-  }, [active, query]);
+  }, [active, query, products]);
   return (
     <section className="shop-section section-space" id="shop">
       <div className="wrap">
@@ -255,9 +293,8 @@ function Footer() {
   return <footer className="site-footer"><div className="wrap footer-grid"><div><Logo light /><p className="footer-intro">كونتر جمالكِ الخاص،<br />على بُعد رسالة.</p><div className="socials"><a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="إنستغرام ميمي" data-testid="link-instagram"><Instagram size={17} /></a><a href="https://wa.me/9647700000000" target="_blank" rel="noreferrer" aria-label="واتساب ميمي" data-testid="link-whatsapp"><Send size={17} /></a></div></div><div className="footer-links"><div><span className="footer-label">تصفّحي</span><a href="#shop">المختارات</a><a href="#categories">التصنيفات</a><a href="#story">حكايتنا</a></div><div><span className="footer-label">نحن هنا</span><a href="https://wa.me/9647700000000" target="_blank" rel="noreferrer">راسلينا واتساب</a><a href="#shop">ملاحظات التوصيل</a><a href="#top">العودة للأعلى</a></div></div></div><div className="wrap footer-bottom"><span>© ٢٠٢٤ ميمي ستور · بغداد، العراق</span><span>مصنوع لأيام الإشراقة اليومية.</span></div></footer>;
 }
 
-function Home() {
+function Home({ products, categories, cart, setCart }: { products: Product[]; categories: string[]; cart: CartItem[]; setCart: Dispatch<SetStateAction<CartItem[]>> }) {
   const [activeCategory, setActiveCategory] = useState<Category>('الكل');
-  const [cart, setCart] = useState<CartItem[]>([]);
   const [favorites, setFavorites] = useState<number[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -265,6 +302,13 @@ function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [announcementVisible, setAnnouncementVisible] = useState(true);
   const [toast, setToast] = useState('');
+  useEffect(() => {
+    setCart(current => current.flatMap(item => {
+      const refreshed = products.find(product => product.id === item.id);
+      return refreshed ? [{ ...refreshed, quantity: item.quantity }] : [];
+    }));
+    setFavorites(current => current.filter(id => products.some(product => product.id === id)));
+  }, [products]);
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const flash = (message: string) => { setToast(message); window.setTimeout(() => setToast(''), 2300); };
   const addToCart = (product: Product) => { setCart(current => current.some(item => item.id === product.id) ? current.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item) : [...current, { ...product, quantity: 1 }]); flash(`أضيفت «${product.name}» إلى السلة`); };
@@ -279,21 +323,236 @@ function Home() {
   const selectCategory = (category: Category) => { setActiveCategory(category); setQuery(''); document.querySelector('#shop')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
   const clearFilters = () => { setActiveCategory('الكل'); setQuery(''); };
   return <div className="grain" dir="rtl">
-    <Header cartCount={cartCount} announcementVisible={announcementVisible} menuOpen={menuOpen} onCart={() => setCartOpen(true)} onDismissAnnouncement={() => setAnnouncementVisible(false)} onMenuToggle={() => setMenuOpen(value => !value)} onSearch={() => { setSearchOpen(value => !value); setMenuOpen(false); }} />
+     <Header cartCount={cartCount} announcementVisible={announcementVisible} menuOpen={menuOpen} onCart={() => setCartOpen(true)} onDismissAnnouncement={() => setAnnouncementVisible(false)} onMenuToggle={() => setMenuOpen(value => !value)} onSearch={() => { setSearchOpen(value => !value); setMenuOpen(false); }} />
     {searchOpen && <div className="search-panel animate-rise"><div className="wrap"><Search size={18} /><input autoFocus value={query} placeholder="ابحثي عن منتج أو ماركة..." aria-label="البحث عن منتج" data-testid="input-search" onChange={event => setQuery(event.target.value)} onKeyDown={event => { if (event.key === 'Escape') setSearchOpen(false); }} /><button onClick={() => { setQuery(''); setSearchOpen(false); }} aria-label="إغلاق البحث" title="إغلاق" data-testid="button-close-search"><X size={18} /></button></div></div>}
-    <main><Hero onShop={() => selectCategory('الكل')} /><div className="perk-row"><div><Check size={16} /><span>منتجات أصلية دائماً</span></div><div><Check size={16} /><span>توصيل محلي بتغليف محبب</span></div><div><Check size={16} /><span>نصيحة من شخص حقيقي</span></div></div><CategoryStrip active={activeCategory} onSelect={selectCategory} /><ShopSection active={activeCategory} query={query} onAdd={addToCart} onFavorite={id => setFavorites(current => current.includes(id) ? current.filter(item => item !== id) : [...current, id])} favorites={favorites} onClear={clearFilters} /><StorySection /><JournalSection onSubscribe={() => flash('شكراً لانضمامكِ إلى ملاحظة ميمي')} /></main>
+     <main><Hero onShop={() => selectCategory('الكل')} /><div className="perk-row"><div><Check size={16} /><span>منتجات أصلية دائماً</span></div><div><Check size={16} /><span>توصيل محلي بتغليف محبب</span></div><div><Check size={16} /><span>نصيحة من شخص حقيقي</span></div></div><CategoryStrip active={activeCategory} categories={[categoryMeta('الكل', 1, products.length), ...categories.map((label, index) => categoryMeta(label, index + 2, products.filter(product => product.category === label).length))]} onSelect={selectCategory} /><ShopSection active={activeCategory} query={query} products={products} onAdd={addToCart} onFavorite={id => setFavorites(current => current.includes(id) ? current.filter(item => item !== id) : [...current, id])} favorites={favorites} onClear={clearFilters} /><StorySection /><JournalSection onSubscribe={() => flash('شكراً لانضمامكِ إلى ملاحظة ميمي')} /></main>
     <Footer /><CartDrawer items={cart} open={cartOpen} onClose={() => setCartOpen(false)} onChangeQuantity={changeQuantity} onRemove={removeItem} onWhatsApp={whatsappOrder} />
     {toast && <div className="toast animate-toast" role="status" data-testid="status-cart"><Check size={16} />{toast}</div>}
   </div>;
 }
 
-function Router() {
-  return <ErrorBoundary resetKey={location.pathname}><Switch><Route path="/" component={Home} /><Route component={NotFound} /></Switch></ErrorBoundary>;
+type ProductForm = {
+  name: string;
+  price: string;
+  note: string;
+  category: string;
+  image: string;
+  brand: string;
+  visual: ProductVisual;
+};
+
+const emptyProductForm: ProductForm = {
+  name: '',
+  price: '',
+  note: '',
+  category: '',
+  image: '',
+  brand: 'Mimie Store',
+  visual: 'serum',
+};
+
+function Admin({ products, categories, onProductsChange, onCategoriesChange }: {
+  products: Product[];
+  categories: string[];
+  onProductsChange: (products: Product[]) => void;
+  onCategoriesChange: (categories: string[]) => void;
+}) {
+  const [, setLocation] = useLocation();
+  const [editing, setEditing] = useState<Product | null>(null);
+  const [form, setForm] = useState<ProductForm>(emptyProductForm);
+  const [categoryName, setCategoryName] = useState('');
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [query, setQuery] = useState('');
+
+  const visibleProducts = products.filter(product => product.visible !== false);
+  const filteredProducts = products.filter(product => {
+    const needle = query.trim().toLocaleLowerCase('ar');
+    return !needle || `${product.name} ${product.brand} ${product.category}`.toLocaleLowerCase('ar').includes(needle);
+  });
+  const flashAdmin = (type: 'success' | 'error', text: string) => {
+    setFeedback({ type, text });
+    window.setTimeout(() => setFeedback(null), 3000);
+  };
+  const openNew = () => {
+    setEditing(null);
+    setForm({ ...emptyProductForm, category: categories[0] ?? '' });
+    window.setTimeout(() => document.querySelector('.admin-editor')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
+  };
+  const openEdit = (product: Product) => {
+    setEditing(product);
+    setForm({
+      name: product.name,
+      price: String(product.price),
+      note: product.note,
+      category: product.category,
+      image: product.image ?? '',
+      brand: product.brand,
+      visual: product.visual,
+    });
+    window.setTimeout(() => document.querySelector('.admin-editor')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
+  };
+  const closeEditor = () => {
+    setEditing(null);
+    setForm({ ...emptyProductForm, category: categories[0] ?? '' });
+  };
+  const saveProduct = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const price = Number(form.price);
+    if (!form.name.trim() || !form.category || !Number.isFinite(price) || price <= 0) {
+      flashAdmin('error', 'أكملي اسم المنتج والسعر والقسم بشكل صحيح.');
+      return;
+    }
+    if (editing) {
+      onProductsChange(products.map(product => product.id === editing.id ? {
+        ...product,
+        name: form.name.trim(),
+        price,
+        note: form.note.trim() || 'اختيار ميمي اليومي',
+        category: form.category,
+        image: form.image || undefined,
+        brand: form.brand.trim() || 'Mimie Store',
+        visual: form.visual,
+      } : product));
+      flashAdmin('success', 'تم حفظ تعديلات المنتج.');
+    } else {
+      const nextId = products.reduce((highest, product) => Math.max(highest, product.id), 0) + 1;
+      onProductsChange([...products, {
+        id: nextId,
+        name: form.name.trim(),
+        brand: form.brand.trim() || 'Mimie Store',
+        category: form.category,
+        price,
+        note: form.note.trim() || 'اختيار ميمي اليومي',
+        rating: 5,
+        reviews: 0,
+        visual: form.visual,
+        tone: '#e4b2ab',
+        accent: '#9d5267',
+        image: form.image || undefined,
+        visible: true,
+      }]);
+      flashAdmin('success', 'تمت إضافة المنتج إلى المتجر.');
+    }
+    closeEditor();
+  };
+  const deleteProduct = (product: Product) => {
+    if (!window.confirm(`هل تريدين حذف «${product.name}» نهائياً؟`)) return;
+    onProductsChange(products.filter(item => item.id !== product.id));
+    if (editing?.id === product.id) closeEditor();
+    flashAdmin('success', 'تم حذف المنتج.');
+  };
+  const toggleProduct = (product: Product) => {
+    onProductsChange(products.map(item => item.id === product.id ? { ...item, visible: item.visible === false } : item));
+    flashAdmin('success', product.visible === false ? 'ظهر المنتج في المتجر.' : 'تم إخفاء المنتج من المتجر.');
+  };
+  const addCategory = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const cleanName = categoryName.trim();
+    if (!cleanName) return;
+    if (cleanName === 'الكل' || categories.includes(cleanName)) {
+      flashAdmin('error', 'هذا القسم موجود مسبقاً.');
+      return;
+    }
+    onCategoriesChange([...categories, cleanName]);
+    setCategoryName('');
+    flashAdmin('success', 'تمت إضافة القسم الجديد.');
+  };
+  const deleteCategory = (category: string) => {
+    if (products.some(product => product.category === category)) {
+      flashAdmin('error', 'لا يمكن حذف هذا القسم قبل نقل المنتجات الموجودة فيه.');
+      return;
+    }
+    if (!window.confirm(`حذف قسم «${category}»؟`)) return;
+    onCategoriesChange(categories.filter(item => item !== category));
+    if (form.category === category) setForm(current => ({ ...current, category: categories.find(item => item !== category) ?? '' }));
+    flashAdmin('success', 'تم حذف القسم.');
+  };
+  const handleFile = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      flashAdmin('error', 'اختاري ملف صورة صالحاً.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => setForm(current => ({ ...current, image: String(reader.result) }));
+    reader.readAsDataURL(file);
+  };
+
+  return <div className="admin-page" dir="rtl">
+    <header className="admin-topbar">
+      <div className="wrap admin-topbar-inner">
+        <div className="admin-brand"><Link href="/" className="admin-back" data-testid="link-back-store"><ArrowRight size={17} /> المتجر</Link><span className="admin-divider" /><Logo /></div>
+        <div className="admin-top-actions"><span className="admin-status"><span /> حفظ محلي تلقائي</span><button className="admin-top-link" onClick={() => setLocation('/')} data-testid="button-view-store">عرض المتجر <ArrowLeft size={15} /></button></div>
+      </div>
+    </header>
+    <main className="wrap admin-main">
+      <div className="admin-intro">
+        <div><p className="eyebrow">MIMIE · مساحة الإدارة</p><h1>لوحة التحكم</h1><p>رتّبي كاونتر ميمي من هاتفك. كل تغيير يُحفظ على هذا الجهاز فوراً.</p></div>
+        <button className="admin-primary-button" onClick={openNew} data-testid="button-add-product"><Plus size={18} /> إضافة منتج جديد</button>
+      </div>
+      {feedback && <div className={`admin-feedback ${feedback.type}`} role="status" data-testid="status-admin-feedback">{feedback.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}{feedback.text}</div>}
+      <section className="admin-stats" aria-label="ملخص المتجر">
+        <div><PackageIcon /><strong>{products.length}</strong><span>كل المنتجات</span></div>
+        <div><Eye size={20} /><strong>{visibleProducts.length}</strong><span>تظهر للزبائن</span></div>
+        <div><FolderPlus size={20} /><strong>{categories.length}</strong><span>الأقسام</span></div>
+      </section>
+      <div className="admin-layout">
+        <section className="admin-products-panel">
+          <div className="admin-panel-heading"><div><p className="eyebrow">كتالوج ميمي</p><h2>المنتجات <span>{products.length}</span></h2></div><div className="admin-search"><Search size={16} /><input value={query} onChange={event => setQuery(event.target.value)} placeholder="ابحثي في المنتجات" aria-label="البحث في المنتجات" data-testid="input-admin-search" /></div></div>
+          {filteredProducts.length === 0 ? <div className="admin-empty"><PackageIcon size={30} /><h3>لا توجد منتجات مطابقة</h3><p>جرّبي كلمة أخرى أو أضيفي منتجاً جديداً.</p></div> : <div className="admin-product-list">{filteredProducts.map(product => <article className={`admin-product-row ${product.visible === false ? 'is-hidden' : ''}`} key={product.id} data-testid={`admin-product-${product.id}`}>
+            <div className="admin-product-thumb"><ProductVisual product={product} small /></div>
+            <div className="admin-product-details"><div className="admin-product-name"><h3>{product.name}</h3>{product.visible === false && <span className="hidden-pill"><EyeOff size={12} /> مخفي</span>}</div><span>{product.brand} · {product.category}</span><strong>{formatIQD(product.price)}</strong></div>
+            <div className="admin-row-actions"><button className="admin-icon-button" onClick={() => toggleProduct(product)} aria-label={product.visible === false ? `إظهار ${product.name}` : `إخفاء ${product.name}`} title={product.visible === false ? 'إظهار المنتج' : 'إخفاء المنتج'} data-testid={`button-toggle-product-${product.id}`}>{product.visible === false ? <Eye size={17} /> : <EyeOff size={17} />}</button><button className="admin-icon-button" onClick={() => openEdit(product)} aria-label={`تعديل ${product.name}`} title="تعديل المنتج" data-testid={`button-edit-product-${product.id}`}><Pencil size={17} /></button><button className="admin-icon-button danger" onClick={() => deleteProduct(product)} aria-label={`حذف ${product.name}`} title="حذف المنتج" data-testid={`button-delete-product-${product.id}`}><Trash2 size={17} /></button></div>
+          </article>)}</div>}
+        </section>
+        <aside className="admin-side-column">
+          <section className="admin-panel category-admin-panel"><div className="admin-panel-heading compact"><div><p className="eyebrow">تنظيم الكتالوج</p><h2>الأقسام</h2></div><FolderPlus size={20} /></div><form className="category-add-form" onSubmit={addCategory}><input value={categoryName} onChange={event => setCategoryName(event.target.value)} placeholder="اسم القسم الجديد" aria-label="اسم القسم الجديد" data-testid="input-new-category" /><button type="submit" aria-label="إضافة قسم" title="إضافة قسم" data-testid="button-add-category"><Plus size={18} /></button></form><div className="category-admin-list">{categories.map(category => <div key={category}><span>{category}<small>{products.filter(product => product.category === category).length} منتجات</small></span><button onClick={() => deleteCategory(category)} aria-label={`حذف قسم ${category}`} title="حذف القسم" data-testid={`button-delete-category-${category}`}><Trash2 size={15} /></button></div>)}</div><p className="admin-help"><AlertCircle size={14} /> لا يمكن حذف قسم مرتبط بمنتجات.</p></section>
+          {!editing && <div className="admin-side-note"><Sparkles size={19} /><div><strong>ملاحظة ميمي</strong><p>أضيفي صوراً واضحة بنسبة مربعة لتظهر أجمل على المتجر.</p></div></div>}
+        </aside>
+      </div>
+      <section className={`admin-editor ${editing ? 'editor-open' : ''}`} aria-label="نموذج المنتج">
+        <div className="admin-editor-heading"><div><p className="eyebrow">{editing ? 'تعديل التفاصيل' : 'منتج جديد'}</p><h2>{editing ? 'تعديل المنتج' : 'إضافة منتج إلى الكاونتر'}</h2></div>{editing && <button className="admin-close-editor" onClick={closeEditor} aria-label="إغلاق نموذج التعديل" title="إغلاق" data-testid="button-close-editor"><X size={18} /></button>}</div>
+        <form onSubmit={saveProduct} className="admin-form">
+          <label>اسم المنتج<input value={form.name} onChange={event => setForm({ ...form, name: event.target.value })} placeholder="مثال: ماسك الطين الوردي" required data-testid="input-product-name" /></label>
+          <label>العلامة التجارية<input value={form.brand} onChange={event => setForm({ ...form, brand: event.target.value })} placeholder="اسم الماركة" data-testid="input-product-brand" /></label>
+          <label>السعر بالدينار العراقي<input type="number" min="1" value={form.price} onChange={event => setForm({ ...form, price: event.target.value })} placeholder="35000" required data-testid="input-product-price" /></label>
+          <label>القسم<select value={form.category} onChange={event => setForm({ ...form, category: event.target.value })} required data-testid="select-product-category"><option value="" disabled>اختاري القسم</option>{categories.map(category => <option key={category} value={category}>{category}</option>)}</select></label>
+          <label className="admin-form-wide">وصف المنتج<textarea value={form.note} onChange={event => setForm({ ...form, note: event.target.value })} placeholder="مثال: ترطيب عميق · 50 مل" rows={3} data-testid="textarea-product-note" /></label>
+          <label className="admin-form-wide">رابط صورة المنتج<input value={form.image} onChange={event => setForm({ ...form, image: event.target.value })} placeholder="https://..." dir="ltr" data-testid="input-product-image-url" /><span className="field-hint">أو اختاري صورة من الهاتف</span><span className="file-picker"><ImagePlus size={17} /> اختيار صورة<input type="file" accept="image/*" onChange={handleFile} aria-label="اختيار صورة من الهاتف" data-testid="input-product-image-file" /></span></label>
+          {form.image && <div className="admin-image-preview"><img src={form.image} alt="معاينة صورة المنتج" /><button type="button" onClick={() => setForm({ ...form, image: '' })} aria-label="إزالة صورة المنتج" title="إزالة الصورة" data-testid="button-remove-product-image"><X size={15} /></button></div>}
+          <label>نمط الرسم الافتراضي<select value={form.visual} onChange={event => setForm({ ...form, visual: event.target.value as ProductVisual })} data-testid="select-product-visual"><option value="serum">زجاجة</option><option value="lip">روج</option><option value="palette">باليت</option><option value="cream">علبة كريم</option><option value="brush">فرشاة</option><option value="mist">بخاخ</option></select></label>
+          <div className="admin-form-actions"><button type="submit" className="admin-primary-button" data-testid="button-save-product"><Save size={17} /> {editing ? 'حفظ التعديلات' : 'إضافة المنتج'}</button>{editing && <button type="button" className="admin-secondary-button" onClick={closeEditor} data-testid="button-cancel-editor">إلغاء</button>}</div>
+        </form>
+      </section>
+    </main>
+  </div>;
+}
+
+function PackageIcon({ size = 20 }: { size?: number }) {
+  return <ShoppingBag size={size} />;
+}
+
+function Router({ products, categories, cart, setCart, onProductsChange, onCategoriesChange }: { products: Product[]; categories: string[]; cart: CartItem[]; setCart: Dispatch<SetStateAction<CartItem[]>>; onProductsChange: (products: Product[]) => void; onCategoriesChange: (categories: string[]) => void }) {
+  const visibleProducts = useMemo(() => products.filter(product => product.visible !== false), [products]);
+  return <ErrorBoundary resetKey={location.pathname}><Switch><Route path="/" component={() => <Home products={visibleProducts} categories={categories} cart={cart} setCart={setCart} />} /><Route path="/admin" component={() => <Admin products={products} categories={categories} onProductsChange={onProductsChange} onCategoriesChange={onCategoriesChange} />} /><Route component={NotFound} /></Switch></ErrorBoundary>;
 }
 
 function App() {
+  const [products, setProducts] = useState<Product[]>(() => readStored(PRODUCTS_KEY, defaultProducts));
+  const [categories, setCategories] = useState<string[]>(() => readStored(CATEGORIES_KEY, defaultCategories.filter(category => category.label !== 'الكل').map(category => category.label)));
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const updateProducts = (nextProducts: Product[]) => {
+    setProducts(nextProducts);
+    setCart(current => current.flatMap(item => {
+      const refreshed = nextProducts.find(product => product.id === item.id && product.visible !== false);
+      return refreshed ? [{ ...refreshed, quantity: item.quantity }] : [];
+    }));
+  };
+  useEffect(() => { window.localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products)); }, [products]);
+  useEffect(() => { window.localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories)); }, [categories]);
   useEffect(() => { document.documentElement.dir = 'rtl'; document.documentElement.lang = 'ar'; return () => { document.documentElement.dir = 'ltr'; document.documentElement.lang = 'en'; }; }, []);
-  return <QueryClientProvider client={queryClient}><TooltipProvider><WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}><Router /></WouterRouter><Toaster /></TooltipProvider></QueryClientProvider>;
+  return <QueryClientProvider client={queryClient}><TooltipProvider><WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}><Router products={products} categories={categories} cart={cart} setCart={setCart} onProductsChange={updateProducts} onCategoriesChange={setCategories} /></WouterRouter><Toaster /></TooltipProvider></QueryClientProvider>;
 }
 
 export default App;
