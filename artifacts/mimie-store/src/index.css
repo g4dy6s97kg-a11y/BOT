@@ -215,7 +215,7 @@ a { -webkit-tap-highlight-color: transparent; }
   pointer-events: none !important;
   z-index: 1 !important;
 }
-/* ===== MOBILE FINAL FIX ===== */
+/* ===== MOBILE TOUCH FIX ===== */
 
 @media (max-width: 767px) {
   html {
@@ -225,44 +225,43 @@ a { -webkit-tap-highlight-color: transparent; }
   html,
   body,
   #root {
-    width: 100% !important;
-    max-width: 100% !important;
+    width: 100%;
+    max-width: 100%;
     overflow-x: hidden !important;
   }
 
+  /* إيقاف كل الحركات التي تسبب مشاكل باللمس */
   .animate-rise,
   .animate-slide,
   .animate-float,
   .animate-toast {
     animation: none !important;
-    transform: none !important;
   }
 
-  .product-card:hover,
-  .category-pill:hover,
+  /* إلغاء hover على الهاتف */
   .btn-main:hover,
   .btn-quiet:hover,
   .icon-btn:hover,
   .favorite-button:hover,
-  .add-button:hover {
-    transform: none !important;
-  }
-
+  .add-button:hover,
+  .category-pill:hover,
+  .product-card:hover,
   .product-card:hover .product-image > * {
     transform: none !important;
+    box-shadow: none !important;
   }
 
+  /* منع طبقة الـ grain من التأثير على الصفحة */
   .grain::after {
     display: none !important;
-    pointer-events: none !important;
   }
+}
 
-  button,
-  a,
-  input,
-  select,
-  textarea {
-    pointer-events: auto !important;
-    touch-action: manipulation;
-  }
+/* ضمان أن الطبقة الرئيسية لا تحجب أي عنصر */
+.grain {
+  position: relative;
+}
+
+.grain::after {
+  pointer-events: none !important;
 }
