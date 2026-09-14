@@ -219,3 +219,11 @@ a { -webkit-tap-highlight-color: transparent; }
     pointer-events: none !important;
   }
 }
+
+.grain {
+  position: relative;
+}
+
+.grain::after {
+  pointer-events: none !important;
+}
