@@ -215,16 +215,25 @@ a { -webkit-tap-highlight-color: transparent; }
   pointer-events: none !important;
   z-index: 1 !important;
 }
-/* ===== MOBILE STABLE ===== */
+/* ===== MOBILE FINAL FIX ===== */
 
 @media (max-width: 767px) {
   html {
     scroll-behavior: auto !important;
   }
 
+  html,
+  body,
+  #root {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
   .animate-rise,
   .animate-slide,
-  .animate-float {
+  .animate-float,
+  .animate-toast {
     animation: none !important;
     transform: none !important;
   }
@@ -244,13 +253,16 @@ a { -webkit-tap-highlight-color: transparent; }
   }
 
   .grain::after {
+    display: none !important;
     pointer-events: none !important;
   }
-}
 
-html,
-body,
-#root {
-  max-width: 100%;
-  overflow-x: hidden !important;
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    pointer-events: auto !important;
+    touch-action: manipulation;
+  }
 }
