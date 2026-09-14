@@ -195,12 +195,14 @@ a { -webkit-tap-highlight-color: transparent; }
 /* ===== MOBILE TOUCH FIX ===== */
 
 @media (max-width: 767px) {
-  html }
+  html {
     scroll-behavior: auto !important;
   }
 
-  html,
-  body,
+  body {
+    overflow-x: hidden !important;
+  }
+
   #root {
     width: 100%;
     max-width: 100%;
@@ -216,14 +218,5 @@ a { -webkit-tap-highlight-color: transparent; }
 
   .grain::after {
     display: none !important;
-    pointer-events: none !important;
   }
-}
-
-.grain {
-  position: relative;
-}
-
-.grain::after {
-  pointer-events: none !important;
 }
