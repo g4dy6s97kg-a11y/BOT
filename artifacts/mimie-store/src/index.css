@@ -289,21 +289,3 @@ a { -webkit-tap-highlight-color: transparent; }
   }
 
   /* إلغاء تأثير hover على اللمس */
-  .btn-main:hover,
-  .btn-quiet:hover,
-  .icon-btn:hover,
-  .favorite-button:hover,
-  .add-button:hover,
-  .category-pill:hover,
-  .product-card:hover {
-    transform: none !important;
-  }
-
-  .btn-main:hover {
-    box-shadow: none !important;
-  }
-
-  .product-card:hover .product-image > * {
-    transform: none !important;
-  }
-}
