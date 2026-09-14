@@ -241,7 +241,13 @@ function ProductCard({ product, onAdd, onFavorite, favorite }: { product: Produc
       <div className="product-info">
         <div className="product-brand">{product.brand}</div><h3>{product.name}</h3><p className="product-note">{product.note}</p>
         <div className="product-rating"><span><Star size={12} fill="currentColor" /> {product.rating}</span><small>({product.reviews} تقييم)</small></div>
-        <div className="product-buy-row"><div><strong>{formatIQD(product.price)}</strong>{product.oldPrice && <del>{formatIQD(product.oldPrice)}</del>}</div><button className="add-button" onClick={() => onAdd(product)} aria-label={`إضافة ${product.name} إلى السلة`} title="أضيفي إلى السلة" data-testid={`button-add-${product.id}`}><Plus size={18} /></button></div>
+        <div className="product-buy-row"><div><strong>{formatIQD(product.price)}</strong>{product.oldPrice && <del>{formatIQD(product.oldPrice)}</del>}</div><button
+  className="add-button"
+  onPointerDown={(e) => {
+    e.preventDefault();
+    onAdd(product);
+  }}
+  onClick={(e) => e.preventDefault()} aria-label={`إضافة ${product.name} إلى السلة`} title="أضيفي إلى السلة" data-testid={`button-add-${product.id}`}><Plus size={18} /></button></div>
       </div>
     </article>
   );
