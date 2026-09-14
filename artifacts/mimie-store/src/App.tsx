@@ -575,33 +575,3 @@ function App() {
 }
 
 export default App;
-/* FIX: stop all page shaking */
-*,
-*::before,
-*::after {
-  animation: none !important;
-  transition: none !important;
-}
-
-html,
-body,
-#root {
-  width: 100%;
-  max-width: 100%;
-  min-height: 100%;
-  overflow-x: hidden !important;
-}
-
-body {
-  position: relative;
-}
-
-.grain::after {
-  position: absolute !important;
-  pointer-events: none !important;
-  animation: none !important;
-  transform: none !important;
-}.animate-float {
-  animation: none !important;
-  transform: none !important;
-}
