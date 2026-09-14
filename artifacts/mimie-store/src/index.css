@@ -266,24 +266,5 @@ a { -webkit-tap-highlight-color: transparent; }
     touch-action: manipulation;
   }
 }
-/* ===== FIX SINGLE TAP ON MOBILE ===== */
 
-@media (max-width: 767px) {
-
-  html,
-  body {
-    touch-action: manipulation !important;
-    -webkit-tap-highlight-color: transparent !important;
-  }
-
-  button,
-  a,
-  input,
-  select,
-  textarea,
-  [role="button"] {
-    touch-action: manipulation !important;
-    -webkit-tap-highlight-color: transparent !important;
-    -webkit-user-select: none;
-    user-select: none;
   }
