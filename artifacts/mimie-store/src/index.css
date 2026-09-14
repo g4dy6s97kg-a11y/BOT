@@ -40,11 +40,7 @@ a { -webkit-tap-highlight-color: transparent; }
 @keyframes slideIn { from { opacity: 0; transform: translateX(26px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 14px); } to { opacity: 1; transform: translate(-50%, 0); } }
 .animate-rise { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
-animate-float {
 
-  animation: none !important;
-
-  transform: none !important
 .animate-slide { animation: slideIn .4s cubic-bezier(.2,.8,.2,1) both; }
 .animate-toast { animation: toastIn .35s ease both; }
 .delay-1 { animation-delay: .1s; } .delay-2 { animation-delay: .2s; } .delay-3 { animation-delay: .3s; }
@@ -212,6 +208,7 @@ animate-float {
 
 .animate-float {
   animation: none !important;
+  transform: none !important;
 }
 
 .grain::after {
