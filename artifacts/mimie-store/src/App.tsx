@@ -601,4 +601,7 @@ body {
   pointer-events: none !important;
   animation: none !important;
   transform: none !important;
+}.animate-float {
+  animation: none !important;
+  transform: none !important;
 }
