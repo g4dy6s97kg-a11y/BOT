@@ -266,3 +266,44 @@ a { -webkit-tap-highlight-color: transparent; }
     touch-action: manipulation;
   }
 }
+/* ===== FIX SINGLE TAP ON MOBILE ===== */
+
+@media (max-width: 767px) {
+
+  html,
+  body {
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role="button"] {
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* إلغاء تأثير hover على اللمس */
+  .btn-main:hover,
+  .btn-quiet:hover,
+  .icon-btn:hover,
+  .favorite-button:hover,
+  .add-button:hover,
+  .category-pill:hover,
+  .product-card:hover {
+    transform: none !important;
+  }
+
+  .btn-main:hover {
+    box-shadow: none !important;
+  }
+
+  .product-card:hover .product-image > * {
+    transform: none !important;
+  }
+}
