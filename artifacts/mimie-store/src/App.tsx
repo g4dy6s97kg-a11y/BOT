@@ -166,7 +166,16 @@ function Header({
         <div className="nav-actions">
           <button className="nav-search" onClick={onSearch} data-testid="button-search" aria-label="البحث عن منتج"><Search size={18} /><span>بحث</span></button>
           <Link href="/admin" className="admin-link" data-testid="link-admin"><LayoutDashboard size={15} /><span>لوحة التحكم</span></Link>
-          <button className="bag-button" onClick={onCart} data-testid="button-cart" aria-label="فتح سلة المشتريات"><ShoppingBag size={19} /><span className="bag-label">سلّتي</span>{cartCount > 0 && <b>{cartCount}</b>}</button>
+        <button
+  className="bag-button"
+  onPointerDown={(e) => {
+    e.preventDefault();
+    onCart();
+  }}
+  onClick={(e) => e.preventDefault()}
+  data-testid="button-cart"
+  aria-label="فتح سلة المشتريات"
+><ShoppingBag size={19} /><span className="bag-label">سلّتي</span>{cartCount > 0 && <b>{cartCount}</b>}</button>
         </div>
       </div>
       {menuOpen && <nav className="mobile-menu animate-rise" aria-label="قائمة الهاتف">
