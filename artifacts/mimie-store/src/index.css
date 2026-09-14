@@ -215,3 +215,53 @@ a { -webkit-tap-highlight-color: transparent; }
   pointer-events: none !important;
   z-index: 1 !important;
 }
+/* ===== MOBILE FIRST ===== */
+
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden !important;
+}
+
+@media (max-width: 767px) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    transition: none !important;
+  }
+
+  .product-card,
+  .product-card:hover,
+  .category-pill,
+  .category-pill:hover,
+  .btn-main,
+  .btn-main:hover,
+  .btn-quiet,
+  .btn-quiet:hover,
+  .icon-btn,
+  .icon-btn:hover,
+  .favorite-button,
+  .favorite-button:hover,
+  .add-button,
+  .add-button:hover {
+    transform: none !important;
+  }
+
+  .product-card:hover .product-image > * {
+    transform: none !important;
+  }
+
+  .grain::after {
+    position: absolute !important;
+    pointer-events: none !important;
+  }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
