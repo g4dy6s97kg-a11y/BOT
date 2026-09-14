@@ -228,3 +228,73 @@ a { -webkit-tap-highlight-color: transparent; }
     color: hsl(var(--primary));
   }
 }
+/* FINAL MOBILE STABILITY FIX */
+@media (hover: none) and (pointer: coarse) {
+  html {
+    scroll-behavior: auto !important;
+    overflow-x: hidden !important;
+  }
+
+  body {
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .grain::after {
+    display: none !important;
+  }
+
+  .animate-rise,
+  .animate-slide,
+  .animate-toast {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .btn-main,
+  .btn-quiet,
+  .icon-btn,
+  .category-pill,
+  .product-card,
+  .favorite-button,
+  .add-button,
+  .admin-link,
+  .admin-primary-button,
+  .instagram-button {
+    transition: none !important;
+  }
+
+  .btn-quiet:hover,
+  .icon-btn:hover,
+  .main-nav a:hover,
+  .hero-text-link:hover,
+  .category-pill:hover,
+  .product-card:hover,
+  .favorite-button:hover,
+  .add-button:hover,
+  .socials a:hover,
+  .footer-links a:hover,
+  .instagram-button:hover,
+  .admin-link:hover,
+  .admin-primary-button:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  .product-card:hover .product-image > * {
+    transform: none !important;
+  }
+
+  .category-pill:hover > svg {
+    transform: none !important;
+  }
+}
