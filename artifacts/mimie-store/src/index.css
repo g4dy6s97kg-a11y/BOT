@@ -195,7 +195,7 @@ a { -webkit-tap-highlight-color: transparent; }
 /* ===== MOBILE TOUCH FIX ===== */
 
 @media (max-width: 767px) {
-  html {
+  html }
     scroll-behavior: auto !important;
   }
 
