@@ -174,7 +174,6 @@ function Header({
   }}
   onClick={(e) => e.preventDefault()}
   data-testid="button-cart"
-  aria-label="فتح سلة المشتريات"
 ><ShoppingBag size={19} /><span className="bag-label">سلّتي</span>{cartCount > 0 && <b>{cartCount}</b>}</button>
         </div>
       </div>
