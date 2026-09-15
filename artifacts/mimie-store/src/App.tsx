@@ -166,17 +166,7 @@ function Header({
   aria-label={menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
   title="القائمة"
   data-testid="button-mobile-menu"
-<button
-  className="mobile-nav-action"
-  onPointerDown={(e) => {
-    e.preventDefault();
-    onMenuToggle();
-  }}
-  onClick={(e) => e.preventDefault()}
-  aria-label={menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
-  title="القائمة"
-  data-testid="button-mobile-menu"
->
+
   <Menu size={21} />
 </button>
 <a href="#top" className="logo-link" data-testid="link-home"><Logo /></a>
