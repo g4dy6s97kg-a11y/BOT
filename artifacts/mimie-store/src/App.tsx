@@ -242,7 +242,6 @@ function Header({
     </header>
   );
 }
-}
 
 function Hero({ onShop }: { onShop: () => void }) {
   return (
