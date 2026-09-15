@@ -627,7 +627,23 @@ function PackageIcon({ size = 20 }: { size?: number }) {
 
 function Router({ products, categories, cart, setCart, onProductsChange, onCategoriesChange }: { products: Product[]; categories: string[]; cart: CartItem[]; setCart: Dispatch<SetStateAction<CartItem[]>>; onProductsChange: (products: Product[]) => void; onCategoriesChange: (categories: string[]) => void }) {
   const visibleProducts = useMemo(() => products.filter(product => product.visible !== false), [products]);
-  return <ErrorBoundary resetKey={location.pathname}><Switch><Route path="/" component={() => <Home products={visibleProducts} categories={categories} cart={cart} setCart={setCart} />} /><Route path="/admin" component={() => <Admin products={products} categories={categories} onProductsChange={onProductsChange} onCategoriesChange={onCategoriesChange} />} /><Route component={NotFound} /></Switch></ErrorBoundary>;
+  const [location] = useLocation();
+
+  return (
+    <ErrorBoundary resetKey={location}>
+      <Switch>
+        <Route path="/">
+          <Home products={visibleProducts} categories={categories} cart={cart} setCart={setCart} />
+        </Route>
+        <Route path="/admin">
+          <Admin products={products} categories={categories} onProductsChange={onProductsChange} onCategoriesChange={onCategoriesChange} />
+        </Route>
+        <Route>
+          <NotFound />
+        </Route>
+      </Switch>
+    </ErrorBoundary>
+  );
 }
 
 function App() {
