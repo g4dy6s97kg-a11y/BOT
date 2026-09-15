@@ -151,52 +151,97 @@ function Header({
 }) {
   return (
     <header className="site-header">
-      {announcementVisible && <div className="announcement">
-        <span>توصيل داخل بغداد خلال ١–٢ يوم</span><span className="announcement-dot">·</span><span>التوصيل مجاناً للطلبات فوق ٧٥,٠٠٠ د.ع</span>
-        <button className="announcement-close" onClick={onDismissAnnouncement} aria-label="إغلاق التنبيه" title="إغلاق" data-testid="button-dismiss-announcement"><X size={14} /></button>
-      </div>}
-      <div className="wrap nav-row">
-      <button
-  className="mobile-nav-action"
-  onClick={onMenuToggle}
-  aria-label={menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
-  title="القائمة"
-  data-testid="button-mobile-menu"
->
-  <Menu size={21} />
-</button>
+      {announcementVisible && (
+        <div className="announcement">
+          <span>توصيل داخل بغداد خلال ١–٢ يوم</span>
+          <span className="announcement-dot">·</span>
+          <span>التوصيل مجاناً للطلبات فوق ٧٥,٠٠٠ د.ع</span>
+          <button
+            className="announcement-close"
+            onClick={onDismissAnnouncement}
+            aria-label="إغلاق التنبيه"
+            title="إغلاق"
+            data-testid="button-dismiss-announcement"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
-<a href="#top" className="logo-link" data-testid="link-home">
-  <Logo />
-</a>
+      <div className="wrap nav-row">
+        <button
+          className="mobile-nav-action"
+          onClick={onMenuToggle}
+          aria-label={menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
+          title="القائمة"
+          data-testid="button-mobile-menu"
+        >
+          <Menu size={21} />
+        </button>
+
+        <a href="#top" className="logo-link" data-testid="link-home">
+          <Logo />
+        </a>
 
         <nav className="main-nav" aria-label="التنقل الرئيسي">
           <a href="#shop" data-testid="link-shop">تسوّقي المختارات</a>
           <a href="#categories" data-testid="link-categories">التصنيفات</a>
           <a href="#story" data-testid="link-story">حكاية ميمي</a>
         </nav>
+
         <div className="nav-actions">
-          <button className="nav-search" onClick={onSearch} data-testid="button-search" aria-label="البحث عن منتج"><Search size={18} /><span>بحث</span></button>
-          <Link href="/admin" className="admin-link" data-testid="link-admin"><LayoutDashboard size={15} /><span>لوحة التحكم</span></Link>
-        <button
-  className="bag-button"
-  onClick={onCart}
-  data-testid="button-cart"
-  aria-label="فتح السلة"
->
-  <ShoppingBag size={19} />
-  <span className="bag-label">سلّتي</span>
-  {cartCount > 0 && <b>{cartCount}</b>}
-</button>
+          <button
+            className="nav-search"
+            onClick={onSearch}
+            data-testid="button-search"
+            aria-label="البحث عن منتج"
+          >
+            <Search size={18} />
+            <span>بحث</span>
+          </button>
+
+          <Link href="/admin" className="admin-link" data-testid="link-admin">
+            <LayoutDashboard size={15} />
+            <span>لوحة التحكم</span>
+          </Link>
+
+          <button
+            className="bag-button"
+            onClick={onCart}
+            data-testid="button-cart"
+            aria-label="فتح السلة"
+          >
+            <ShoppingBag size={19} />
+            <span className="bag-label">سلّتي</span>
+            {cartCount > 0 && <b>{cartCount}</b>}
+          </button>
+        </div>
       </div>
-      {menuOpen && <nav className="mobile-menu animate-rise" aria-label="قائمة الهاتف">
-        <a href="#shop" onClick={onMenuToggle} data-testid="mobile-link-shop">تسوّقي المختارات <ChevronLeft size={16} /></a>
-        <a href="#categories" onClick={onMenuToggle} data-testid="mobile-link-categories">التصنيفات <ChevronLeft size={16} /></a>
-        <a href="#story" onClick={onMenuToggle} data-testid="mobile-link-story">حكاية ميمي <ChevronLeft size={16} /></a>
-         <Link href="/admin" onClick={onMenuToggle} className="mobile-admin-link" data-testid="mobile-link-admin"><LayoutDashboard size={16} /> لوحة التحكم</Link>
-      </nav>}
+
+      {menuOpen && (
+        <nav className="mobile-menu animate-rise" aria-label="قائمة الهاتف">
+          <a href="#shop" onClick={onMenuToggle} data-testid="mobile-link-shop">
+            تسوّقي المختارات <ChevronLeft size={16} />
+          </a>
+          <a href="#categories" onClick={onMenuToggle} data-testid="mobile-link-categories">
+            التصنيفات <ChevronLeft size={16} />
+          </a>
+          <a href="#story" onClick={onMenuToggle} data-testid="mobile-link-story">
+            حكاية ميمي <ChevronLeft size={16} />
+          </a>
+          <Link
+            href="/admin"
+            onClick={onMenuToggle}
+            className="mobile-admin-link"
+            data-testid="mobile-link-admin"
+          >
+            <LayoutDashboard size={16} /> لوحة التحكم
+          </Link>
+        </nav>
+      )}
     </header>
   );
+}
 }
 
 function Hero({ onShop }: { onShop: () => void }) {
