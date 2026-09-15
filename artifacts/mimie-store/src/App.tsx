@@ -156,13 +156,7 @@ function Header({
         <button className="announcement-close" onClick={onDismissAnnouncement} aria-label="إغلاق التنبيه" title="إغلاق" data-testid="button-dismiss-announcement"><X size={14} /></button>
       </div>}
       <div className="wrap nav-row">
-        <button
-  className="mobile-nav-action"
-  onPointerDown={(e) => {
-    e.preventDefault();
-    onMenuToggle();
-  }}
-  <button
+      <button
   className="mobile-nav-action"
   onPointerDown={(e) => {
     e.preventDefault();
@@ -178,6 +172,7 @@ function Header({
 
 <a href="#top" className="logo-link" data-testid="link-home">
   <Logo />
+</a>
 </a><a href="#top" className="logo-link" data-testid="link-home"><Logo /></a>
         <nav className="main-nav" aria-label="التنقل الرئيسي">
           <a href="#shop" data-testid="link-shop">تسوّقي المختارات</a>
