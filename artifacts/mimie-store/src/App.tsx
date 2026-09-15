@@ -173,7 +173,7 @@ function Header({
 <a href="#top" className="logo-link" data-testid="link-home">
   <Logo />
 </a>
-</a><a href="#top" className="logo-link" data-testid="link-home"><Logo /></a>
+
         <nav className="main-nav" aria-label="التنقل الرئيسي">
           <a href="#shop" data-testid="link-shop">تسوّقي المختارات</a>
           <a href="#categories" data-testid="link-categories">التصنيفات</a>
