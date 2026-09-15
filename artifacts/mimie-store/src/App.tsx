@@ -158,11 +158,7 @@ function Header({
       <div className="wrap nav-row">
       <button
   className="mobile-nav-action"
-  onPointerDown={(e) => {
-    e.preventDefault();
-    onMenuToggle();
-  }}
-  onClick={(e) => e.preventDefault()}
+  onClick={onMenuToggle}
   aria-label={menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
   title="القائمة"
   data-testid="button-mobile-menu"
@@ -184,14 +180,14 @@ function Header({
           <Link href="/admin" className="admin-link" data-testid="link-admin"><LayoutDashboard size={15} /><span>لوحة التحكم</span></Link>
         <button
   className="bag-button"
-  onPointerDown={(e) => {
-    e.preventDefault();
-    onCart();
-  }}
-  onClick={(e) => e.preventDefault()}
+  onClick={onCart}
   data-testid="button-cart"
-><ShoppingBag size={19} /><span className="bag-label">سلّتي</span>{cartCount > 0 && <b>{cartCount}</b>}</button>
-        </div>
+  aria-label="فتح السلة"
+>
+  <ShoppingBag size={19} />
+  <span className="bag-label">سلّتي</span>
+  {cartCount > 0 && <b>{cartCount}</b>}
+</button>
       </div>
       {menuOpen && <nav className="mobile-menu animate-rise" aria-label="قائمة الهاتف">
         <a href="#shop" onClick={onMenuToggle} data-testid="mobile-link-shop">تسوّقي المختارات <ChevronLeft size={16} /></a>
@@ -256,13 +252,16 @@ function ProductCard({ product, onAdd, onFavorite, favorite }: { product: Produc
       <div className="product-info">
         <div className="product-brand">{product.brand}</div><h3>{product.name}</h3><p className="product-note">{product.note}</p>
         <div className="product-rating"><span><Star size={12} fill="currentColor" /> {product.rating}</span><small>({product.reviews} تقييم)</small></div>
-        <div className="product-buy-row"><div><strong>{formatIQD(product.price)}</strong>{product.oldPrice && <del>{formatIQD(product.oldPrice)}</del>}</div><button
+        <div className="product-buy-row"><div><strong>{formatIQD(product.price)}</strong>{product.oldPrice && <del>{formatIQD(product.oldPrice)}</del>}</div>
+  <button
   className="add-button"
-  onPointerDown={(e) => {
-    e.preventDefault();
-    onAdd(product);
-  }}
-  onClick={(e) => e.preventDefault()} aria-label={`إضافة ${product.name} إلى السلة`} title="أضيفي إلى السلة" data-testid={`button-add-${product.id}`}><Plus size={18} /></button></div>
+  onClick={() => onAdd(product)}
+  aria-label={`إضافة ${product.name} إلى السلة`}
+  title="أضيفي إلى السلة"
+  data-testid={`button-add-${product.id}`}
+>
+  <Plus size={18} />
+</button></div>
       </div>
     </article>
   );
