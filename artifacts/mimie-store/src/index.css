@@ -298,3 +298,24 @@ a { -webkit-tap-highlight-color: transparent; }
     transform: none !important;
   }
 }
+/* iPhone touch fix */
+@media (hover: none) and (pointer: coarse) {
+  .animate-rise,
+  .animate-slide,
+  .animate-toast,
+  .delay-1,
+  .delay-2,
+  .delay-3,
+  .delay-4,
+  .delay-5 {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  button,
+  a,
+  input {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+}
