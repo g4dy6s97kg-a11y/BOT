@@ -162,12 +162,23 @@ function Header({
     e.preventDefault();
     onMenuToggle();
   }}
+  <button
+  className="mobile-nav-action"
+  onPointerDown={(e) => {
+    e.preventDefault();
+    onMenuToggle();
+  }}
   onClick={(e) => e.preventDefault()}
-  
-<a href="#top" className="logo-link" data-testid="link-home"><Logo /></a>
+  aria-label={menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
+  title="القائمة"
+  data-testid="button-mobile-menu"
+>
   <Menu size={21} />
-</button> aria-label={menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'} title="القائمة" data-testid="button-mobile-menu"><Menu size={21} /></button>
-        <a href="#top" className="logo-link" data-testid="link-home"><Logo /></a>
+</button>
+
+<a href="#top" className="logo-link" data-testid="link-home">
+  <Logo />
+</a><a href="#top" className="logo-link" data-testid="link-home"><Logo /></a>
         <nav className="main-nav" aria-label="التنقل الرئيسي">
           <a href="#shop" data-testid="link-shop">تسوّقي المختارات</a>
           <a href="#categories" data-testid="link-categories">التصنيفات</a>
