@@ -156,7 +156,19 @@ function Header({
         <button className="announcement-close" onClick={onDismissAnnouncement} aria-label="إغلاق التنبيه" title="إغلاق" data-testid="button-dismiss-announcement"><X size={14} /></button>
       </div>}
       <div className="wrap nav-row">
-        <button className="mobile-nav-action" onClick={onMenuToggle} aria-label={menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'} title="القائمة" data-testid="button-mobile-menu"><Menu size={21} /></button>
+        <button
+  className="mobile-nav-action"
+  onPointerDown={(e) => {
+    e.preventDefault();
+    onMenuToggle();
+  }}
+  onClick={(e) => e.preventDefault()}
+  aria-label={menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
+  title="القائمة"
+  data-testid="button-mobile-menu"
+>
+  <Menu size={21} />
+</button> aria-label={menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'} title="القائمة" data-testid="button-mobile-menu"><Menu size={21} /></button>
         <a href="#top" className="logo-link" data-testid="link-home"><Logo /></a>
         <nav className="main-nav" aria-label="التنقل الرئيسي">
           <a href="#shop" data-testid="link-shop">تسوّقي المختارات</a>
